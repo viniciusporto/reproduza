@@ -30,6 +30,12 @@ public class DataGenerator implements HasLogger {
 
 	private static final String[] FILLING = new String[] { "Strawberry", "Chocolate", "Blueberry", "Raspberry",
 			"Vanilla" };
+	private static final String[] FIRST_NAME_PACIENTE = new String[] { "Maria", "Marta", "Alice", "Claudia", "Paula", "Jennifer",
+			"Beatriz", "Fatima", "Roberta", "Marcela", "Vitoria", "Fernanda", "Amanda", "Luiza", "Josefa", "Elaine",
+			"Larissa", "Felipa", "Joana" };
+	private static final String[] LAST_NAME_PACIENTE = new String[] { "dos Santos", "Fernandes", "da Silva", "Perpetua", "Araujo", "Hendricks",
+			"Severo", "Petrucio", "Fialho", "Freire", "Costa", "Braga", "Rufino", "Porto", "Oliveira", "Guedes" };
+
 	private static final String[] TYPE = new String[] { "Cake", "Pastry", "Tart", "Muffin", "Biscuit", "Bread", "Bagel",
 			"Bun", "Brownie", "Cookie", "Cracker", "Cheese Cake" };
 	private static final String[] FIRST_NAME = new String[] { "Ori", "Amanda", "Octavia", "Laurel", "Lael", "Delilah",
@@ -90,13 +96,13 @@ public class DataGenerator implements HasLogger {
 		getLogger().info("Generated demo data");
 	}
 
-	private void fillCustomer(Consulta customer) {
+	private void fillCustomer(Paciente customer) {
 		String first = getRandom(FIRST_NAME);
 		String last = getRandom(LAST_NAME);
-		customer.setFullName(first + " " + last);
-		customer.setPhoneNumber(getRandomPhone());
+		customer.setNome(first + " " + last);
+		customer.setTelefone(getRandomPhone());
 		if (random.nextInt(10) == 0) {
-			customer.setDetails("Very important customer");
+			customer.setEndereco("Very important customer");
 		}
 	}
 
@@ -142,14 +148,14 @@ public class DataGenerator implements HasLogger {
 		order.changeState(barista, getRandomState(order.getDueDate()));
 
 		int itemCount = random.nextInt(3);
-		List<OrderItem> items = new ArrayList<>();
+		List<DiagEnfermagem> items = new ArrayList<>();
 		for (int i = 0; i <= itemCount; i++) {
-			OrderItem item = new OrderItem();
+			DiagEnfermagem item = new DiagEnfermagem();
 			Paciente paciente;
 			do {
 				paciente = productSupplier.get();
 			} while (containsProduct(items, paciente));
-			item.setProduct(paciente);
+			//item.setProduct(paciente);
 			item.setQuantity(random.nextInt(10) + 1);
 			if (random.nextInt(5) == 0) {
 				if (random.nextBoolean()) {
@@ -210,9 +216,9 @@ public class DataGenerator implements HasLogger {
 		return history;
 	}
 
-	private boolean containsProduct(List<OrderItem> items, Paciente paciente) {
-		for (OrderItem item : items) {
-			if (item.getProduct() == paciente) {
+	private boolean containsProduct(List<DiagEnfermagem> items, Paciente paciente) {
+		for (DiagEnfermagem item : items) {
+			if (item.getDominio() == null || item.getDominio().getNome() == paciente.getNome()) {
 				return true;
 			}
 		}
@@ -286,7 +292,9 @@ public class DataGenerator implements HasLogger {
 		List<Paciente> pacientes = new ArrayList<>();
 		for (int i = 0; i < numberOfItems; i++) {
 			Paciente paciente = new Paciente();
-			paciente.setNome(getRandomProductName());
+			paciente.setNome(getRandomPacienteName());
+			paciente.setEmail(paciente.getNome().toLowerCase().replace(" ", "."));
+			paciente.setTelefone(getRandomPhone());
 			double doublePrice = 2.0 + random.nextDouble() * 100.0;
 			paciente.setPrice((int) (doublePrice * 100.0));
 			pacientes.add(productsRepo.save(paciente));
@@ -302,20 +310,20 @@ public class DataGenerator implements HasLogger {
 		};
 	}
 
-	private String getRandomProductName() {
-		String firstFilling = getRandom(FILLING);
+	private String getRandomPacienteName() {
+		String firstFilling = getRandom(FIRST_NAME_PACIENTE);
 		String name;
 		if (random.nextBoolean()) {
 			String secondFilling;
 			do {
-				secondFilling = getRandom(FILLING);
+				secondFilling = getRandom(FIRST_NAME_PACIENTE);
 			} while (secondFilling.equals(firstFilling));
 
 			name = firstFilling + " " + secondFilling;
 		} else {
 			name = firstFilling;
 		}
-		name += " " + getRandom(TYPE);
+		name += " " + getRandom(LAST_NAME_PACIENTE);
 
 		return name;
 	}

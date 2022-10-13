@@ -1,5 +1,5 @@
 /**
- *
+ * Item do Questionario.
  */
 package br.com.porto.ui.views.orderedit;
 
@@ -98,7 +98,7 @@ public class OrderDetails extends PolymerTemplate<OrderDetails.Model> {
 
 	public interface Model extends TemplateModel {
 		@Include({ "id", "dueDate.day", "dueDate.weekday", "dueDate.date", "dueTime", "state", "pickupLocation.name",
-			"customer.fullName", "customer.phoneNumber", "customer.details", "items.product.name", "items.comment",
+			"customer.nome", "customer.telefone", "customer.details", "items.product.name", "items.comment",
 			"items.quantity", "items.product.price", "history.message", "history.createdBy.firstName",
 			"history.timestamp", "history.newState", "totalPrice" })
 		@Encode(value = LongToStringConverter.class, path = "id")

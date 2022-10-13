@@ -1,8 +1,6 @@
 package br.com.porto.backend.data.entity;
 
 import br.com.porto.backend.data.entity.util.EntityFrontEnd;
-import jdk.vm.ci.meta.Local;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.validation.constraints.Max;
@@ -10,7 +8,6 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.Objects;
 
 @Entity

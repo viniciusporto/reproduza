@@ -9,7 +9,7 @@ import javax.validation.constraints.Size;
 
 
 @Entity
-@EntityFrontEnd(name="Paciente")
+@EntityFrontEnd(name="Consulta")
 public class Consulta extends AbstractEntity {
 
 	@NotBlank

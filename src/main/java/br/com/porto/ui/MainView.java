@@ -40,12 +40,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Viewport(VIEWPORT)
-@PWA(name = "Bakery App Starter", shortName = "reproduza",
-		startPath = "login",
-		backgroundColor = "#227aef", themeColor = "#227aef",
-		offlinePath = "offline-page.html",
-		offlineResources = {"images/offline-login-banner.jpg"},
-		enableInstallPrompt = false)
 @CssImport(value = "./styles/vaadin-app-layout-styles.css", themeFor = "vaadin-app-layout")
 public class MainView extends AppLayout {
 

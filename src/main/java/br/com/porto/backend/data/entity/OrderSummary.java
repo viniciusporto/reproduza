@@ -11,9 +11,9 @@ public interface OrderSummary {
 
 	OrderState getState();
 
-	Consulta getCustomer();
+	Paciente getCustomer();
 
-	List<OrderItem> getItems();
+	List<DiagEnfermagem> getItems();
 
 	LocalDate getDueDate();
 

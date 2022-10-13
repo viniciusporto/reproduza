@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import br.com.porto.backend.data.entity.*;
 import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.HasValue;
@@ -14,30 +15,34 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.internal.AbstractFieldSupport;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.shared.Registration;
-import br.com.porto.backend.data.entity.OrderItem;
-import br.com.porto.backend.data.entity.Paciente;
 import br.com.porto.ui.views.storefront.events.TotalPriceChangeEvent;
 
-public class OrderItemsEditor extends Div implements HasValueAndElement<ComponentValueChangeEvent<OrderItemsEditor,List<OrderItem>>, List<OrderItem>> {
+public class OrderItemsEditor extends Div implements HasValueAndElement<ComponentValueChangeEvent<OrderItemsEditor,List<DiagEnfermagem>>, List<DiagEnfermagem>> {
 
 	private OrderItemEditor empty;
 
-	private DataProvider<Paciente, String> productDataProvider;
+	private DataProvider<Dominio, String> dominioDataProvider;
+
+	private DataProvider<Classe, String> classeDataProvider;
+
+	private DataProvider<Diagnostico, String> diagnosticoDataProvider;
 
 	private int totalPrice = 0;
 
 	private boolean hasChanges = false;
 
-	private final AbstractFieldSupport<OrderItemsEditor,List<OrderItem>> fieldSupport;
+	private final AbstractFieldSupport<OrderItemsEditor,List<DiagEnfermagem>> fieldSupport;
 	
-	public OrderItemsEditor(DataProvider<Paciente, String> productDataProvider) {
-		this.productDataProvider = productDataProvider;
+	public OrderItemsEditor(DataProvider<Dominio, String> dominioDataProvider, DataProvider<Classe, String> classeDataProvider, DataProvider<Diagnostico, String> diagnosticoDataProvider) {
+		this.dominioDataProvider = dominioDataProvider;
+		this.classeDataProvider = classeDataProvider;
+		this.diagnosticoDataProvider = diagnosticoDataProvider;
 		this.fieldSupport = new AbstractFieldSupport<>(this, Collections.emptyList(),
 				Objects::equals, c ->  {}); 
 	}
 
 	@Override
-	public void setValue(List<OrderItem> items) {
+	public void setValue(List<DiagEnfermagem> items) {
 		fieldSupport.setValue(items);
 		removeAll();
 		totalPrice = 0;
@@ -50,19 +55,19 @@ public class OrderItemsEditor extends Div implements HasValueAndElement<Componen
 		setHasChanges(false);
 	}
 
-	private OrderItemEditor createEditor(OrderItem value) {
-		OrderItemEditor editor = new OrderItemEditor(productDataProvider);
+	private OrderItemEditor createEditor(DiagEnfermagem value) {
+		OrderItemEditor editor = new OrderItemEditor(dominioDataProvider, classeDataProvider, diagnosticoDataProvider);
 		getElement().appendChild(editor.getElement());
 		editor.addPriceChangeListener(e -> updateTotalPriceOnItemPriceChange(e.getOldValue(), e.getNewValue()));
-		editor.addProductChangeListener(e -> productChanged(e.getSource(), e.getProduct()));
+		editor.addProductChangeListener(e -> productChanged(e.getSource(), e.getDominio()));
 		editor.addCommentChangeListener(e -> setHasChanges(true));
 		editor.addDeleteListener(e -> {
 			OrderItemEditor orderItemEditor = e.getSource();
 			if (orderItemEditor != empty) {
 				remove(orderItemEditor);
-				OrderItem orderItem = orderItemEditor.getValue();
-				setValue(getValue().stream().filter(element -> element != orderItem).collect(Collectors.toList()));
-				updateTotalPriceOnItemPriceChange(orderItem.getTotalPrice(), 0);
+				DiagEnfermagem diagEnfermagem = orderItemEditor.getValue();
+				setValue(getValue().stream().filter(element -> element != diagEnfermagem).collect(Collectors.toList()));
+				updateTotalPriceOnItemPriceChange(diagEnfermagem.getTotalPrice(), 0);
 				setHasChanges(true);
 			}
 		});
@@ -78,18 +83,18 @@ public class OrderItemsEditor extends Div implements HasValueAndElement<Componen
 	}
 
 	@Override
-	public List<OrderItem> getValue() {
+	public List<DiagEnfermagem> getValue() {
 		return fieldSupport.getValue();
 	}
 
-	private void productChanged(OrderItemEditor item, Paciente paciente) {
+	private void productChanged(OrderItemEditor item, Dominio dominio) {
 		setHasChanges(true);
 		if (empty == item) {
 			createEmptyElement();
-			OrderItem orderItem = new OrderItem();
-			orderItem.setProduct(paciente);
-			item.setValue(orderItem);
-			setValue(Stream.concat(getValue().stream(),Stream.of(orderItem)).collect(Collectors.toList()));
+			DiagEnfermagem diagEnfermagem = new DiagEnfermagem();
+			//orderItem.setProduct(paciente);
+			item.setValue(diagEnfermagem);
+			setValue(Stream.concat(getValue().stream(),Stream.of(diagEnfermagem)).collect(Collectors.toList()));
 		}
 	}
 
@@ -127,7 +132,7 @@ public class OrderItemsEditor extends Div implements HasValueAndElement<Componen
 
 	@Override
 	public Registration addValueChangeListener(
-			ValueChangeListener<? super ComponentValueChangeEvent<OrderItemsEditor, List<OrderItem>>> listener) {
+			ValueChangeListener<? super ComponentValueChangeEvent<OrderItemsEditor, List<DiagEnfermagem>>> listener) {
 		return fieldSupport.addValueChangeListener(listener);
 	}
 }

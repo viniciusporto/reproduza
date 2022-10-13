@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import br.com.porto.backend.data.entity.*;
+import br.com.porto.backend.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -36,12 +38,6 @@ import com.vaadin.flow.shared.Registration;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import br.com.porto.backend.data.OrderState;
-import br.com.porto.backend.data.entity.Order;
-import br.com.porto.backend.data.entity.PickupLocation;
-import br.com.porto.backend.data.entity.Paciente;
-import br.com.porto.backend.data.entity.User;
-import br.com.porto.backend.service.PickupLocationService;
-import br.com.porto.backend.service.PacienteService;
 import br.com.porto.ui.crud.CrudEntityDataProvider;
 import br.com.porto.ui.dataproviders.DataProviderUtil;
 import br.com.porto.ui.events.CancelEvent;
@@ -84,19 +80,19 @@ public class OrderEditor extends PolymerTemplate<OrderEditor.Model> {
 	private ComboBox<PickupLocation> pickupLocation;
 
 	@Id("customerName")
-	private TextField customerName;
+	private ComboBox<Paciente> customerName;
 
 	@Id("customerNumber")
 	private TextField customerNumber;
-
-	@Id("customerDetails")
-	private TextField customerDetails;
 
 	@Id("cancel")
 	private Button cancel;
 
 	@Id("review")
 	private Button review;
+
+	@Id("instrumento")
+	private Button instrumento;
 
 	@Id("itemsContainer")
 	private Div itemsContainer;
@@ -110,10 +106,13 @@ public class OrderEditor extends PolymerTemplate<OrderEditor.Model> {
 	private final LocalTimeConverter localTimeConverter = new LocalTimeConverter();
 
 	@Autowired
-	public OrderEditor(PickupLocationService locationService, PacienteService pacienteService) {
+	public OrderEditor(PickupLocationService locationService, PacienteService pacienteService, DominioService dominioService, ClasseService classeService, DiagnosticoService diagnosticoService) {
 		DataProvider<PickupLocation, String> locationDataProvider = new CrudEntityDataProvider<>(locationService);
-		DataProvider<Paciente, String> productDataProvider = new CrudEntityDataProvider<>(pacienteService);
-		itemsEditor = new OrderItemsEditor(productDataProvider);
+		DataProvider<Paciente, String> pacienteDataProvider = new CrudEntityDataProvider<>(pacienteService);
+		DataProvider<Dominio, String> dominioDataProvider = new CrudEntityDataProvider<>(dominioService);
+		DataProvider<Classe, String> classeDataProvider = new CrudEntityDataProvider<>(classeService);
+		DataProvider<Diagnostico, String> diagnosticoDataProvider = new CrudEntityDataProvider<>(diagnosticoService);
+		itemsEditor = new OrderItemsEditor(dominioDataProvider,classeDataProvider,diagnosticoDataProvider);
 
 		itemsContainer.add(itemsEditor);
 
@@ -145,12 +144,12 @@ public class OrderEditor extends PolymerTemplate<OrderEditor.Model> {
 		pickupLocation.setRequired(false);
 
 		customerName.setRequired(true);
-		binder.bind(customerName, "customer.fullName");
+		customerName.setItemLabelGenerator(createItemLabelGenerator(Paciente::getNome));
+		customerName.setDataProvider(pacienteDataProvider);
+		binder.bind(customerName, "customer.nome");
 
 		customerNumber.setRequired(true);
-		binder.bind(customerNumber, "customer.phoneNumber");
-
-		binder.bind(customerDetails, "customer.details");
+		binder.bind(customerNumber, "customer.telefone");
 
 		itemsEditor.setRequiredIndicatorVisible(true);
 		binder.bind(itemsEditor, "items");

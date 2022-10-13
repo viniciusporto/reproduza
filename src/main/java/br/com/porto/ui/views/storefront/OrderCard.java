@@ -11,7 +11,7 @@ import java.util.List;
 
 import com.vaadin.flow.data.renderer.TemplateRenderer;
 import br.com.porto.backend.data.entity.Order;
-import br.com.porto.backend.data.entity.OrderItem;
+import br.com.porto.backend.data.entity.DiagEnfermagem;
 import br.com.porto.backend.data.entity.OrderSummary;
 import br.com.porto.ui.utils.converters.OrderStateConverter;
 
@@ -82,10 +82,10 @@ public class OrderCard {
 	}
 
 	public String getFullName() {
-		return order.getCustomer().getFullName();
+		return order.getCustomer().getNome();
 	}
 
-	public List<OrderItem> getItems() {
+	public List<DiagEnfermagem> getItems() {
 		return order.getItems();
 	}
 }

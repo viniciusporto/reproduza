@@ -55,7 +55,7 @@ public class Order extends AbstractEntity implements OrderSummary {
 
 	@NotNull
 	@OneToOne(cascade = CascadeType.ALL)
-	private Consulta customer;
+	private Paciente customer;
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
 	@OrderColumn
@@ -63,7 +63,7 @@ public class Order extends AbstractEntity implements OrderSummary {
 	@BatchSize(size = 1000)
 	@NotEmpty
 	@Valid
-	private List<OrderItem> items;
+	private List<DiagEnfermagem> items;
 	@NotNull(message = "{bakery.status.required}")
 	private OrderState state;
 
@@ -75,7 +75,7 @@ public class Order extends AbstractEntity implements OrderSummary {
 
 	public Order(User createdBy) {
 		this.state = OrderState.NEW;
-		setCustomer(new Consulta());
+		setCustomer(new Paciente());
 		addHistoryItem(createdBy, "Order placed");
 		this.items = new ArrayList<>();
 	}
@@ -121,20 +121,20 @@ public class Order extends AbstractEntity implements OrderSummary {
 	}
 
 	@Override
-	public Consulta getCustomer() {
+	public Paciente getCustomer() {
 		return customer;
 	}
 
-	public void setCustomer(Consulta customer) {
+	public void setCustomer(Paciente customer) {
 		this.customer = customer;
 	}
 
 	@Override
-	public List<OrderItem> getItems() {
+	public List<DiagEnfermagem> getItems() {
 		return items;
 	}
 
-	public void setItems(List<OrderItem> items) {
+	public void setItems(List<DiagEnfermagem> items) {
 		this.items = items;
 	}
 
